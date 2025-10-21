@@ -1,0 +1,102 @@
+name: Followers
+description: |-
+
+  APIs for following and unfollowing users
+endpoints:
+  -
+    httpMethods:
+      - POST
+    uri: 'api/users/{user_id}/follow'
+    metadata:
+      groupName: Followers
+      groupDescription: |-
+
+        APIs for following and unfollowing users
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Toggle following a user.'
+      description: |-
+        If the authenticated user is not already following the target user, this endpoint will follow them.
+        If already following, it will unfollow the user.
+      authenticated: true
+      deprecated: false
+      custom: []
+    headers:
+      Authorization: 'Bearer Bearer {YOUR_TOKEN}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      user_id:
+        name: user_id
+        description: 'The ID of the user.'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        custom: []
+      user:
+        name: user
+        description: 'The ID of the user to follow or unfollow.'
+        required: true
+        example: 17
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        custom: []
+    cleanUrlParameters:
+      user_id: 1
+      user: 17
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        status: 200
+        content: |-
+          {
+           "message": "Followed"
+          }
+        headers: []
+        description: ''
+        custom: []
+      -
+        status: 200
+        content: |-
+          {
+           "message": "Unfollowed"
+          }
+        headers: []
+        description: ''
+        custom: []
+      -
+        status: 400
+        content: |-
+          {
+           "message": "You cannot follow yourself"
+          }
+        headers: []
+        description: ''
+        custom: []
+      -
+        status: 404
+        content: |-
+          {
+           "message": "No query results for model [User] ..."
+          }
+        headers: []
+        description: ''
+        custom: []
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 3V5EgbkvZcDPa166h8fd4ae'
+    controller: null
+    method: null
+    route: null
+    custom: []

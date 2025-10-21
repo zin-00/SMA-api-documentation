@@ -1,0 +1,91 @@
+name: Likes
+description: |-
+
+  APIs for liking and unliking posts
+endpoints:
+  -
+    httpMethods:
+      - POST
+    uri: 'api/posts/{post_id}/like'
+    metadata:
+      groupName: Likes
+      groupDescription: |-
+
+        APIs for liking and unliking posts
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Toggle like for a post.'
+      description: 'If the user has already liked the post, it will be unliked. Otherwise, it will be liked.'
+      authenticated: true
+      deprecated: false
+      custom: []
+    headers:
+      Authorization: 'Bearer Bearer {YOUR_TOKEN}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      post_id:
+        name: post_id
+        description: 'The ID of the post.'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        custom: []
+      post:
+        name: post
+        description: 'The ID of the post to like or unlike.'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        custom: []
+    cleanUrlParameters:
+      post_id: 1
+      post: 1
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        status: 200
+        content: |-
+          {
+           "message": "Liked"
+          }
+        headers: []
+        description: ''
+        custom: []
+      -
+        status: 200
+        content: |-
+          {
+           "message": "Unliked"
+          }
+        headers: []
+        description: ''
+        custom: []
+      -
+        status: 404
+        content: |-
+          {
+           "message": "No query results for model [Post] ..."
+          }
+        headers: []
+        description: ''
+        custom: []
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 3V5EgbkvZcDPa166h8fd4ae'
+    controller: null
+    method: null
+    route: null
+    custom: []
