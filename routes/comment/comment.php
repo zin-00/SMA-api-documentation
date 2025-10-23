@@ -5,5 +5,5 @@ use Illuminate\Support\Facades\Route;
 
 
     Route::post('/comments', [CommentController::class, 'store']);
-    Route::put('/comments/{comment}', [CommentController::class, 'update']);
-    Route::delete('/comments/{comment}', [CommentController::class, 'destroy']);
+    Route::put('/comments/{comment_id}', [CommentController::class, 'update']);
+    Route::delete('/comments/{comment_id}', [CommentController::class, 'destroy']);

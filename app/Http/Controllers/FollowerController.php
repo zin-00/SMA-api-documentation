@@ -10,49 +10,45 @@ use Illuminate\Http\Request;
 /**
  * @group Followers
  *
- * APIs for following and unfollowing users
+ * APIs for following, unfollowing, and viewing followers.
  */
 class FollowerController extends Controller
 {
     /**
-     * Toggle following a user.
+     * Follow or unfollow another user.
      *
-     * If the authenticated user is not already following the target user, this endpoint will follow them.
-     * If already following, it will unfollow the user.
+     * This endpoint allows the **authenticated user** to follow or unfollow another user.
+     * You **do not need to send your own user ID** — it’s automatically detected from your token.
+     *
+     * **Behavior:**
+     * - If you are not yet following the target user → it will follow them.
+     * - If you are already following the target user → it will unfollow them.
      *
      * @authenticated
      *
-     * Headers:
-     * - Authorization: Bearer {token}
-     *
-     * @urlParam user integer required The ID of the user to follow or unfollow.
+     * @urlParam user integer required The ID of the user you want to follow or unfollow. Example: 5
      *
      * @response 200 {
      *  "message": "Followed"
      * }
-     *
      * @response 200 {
      *  "message": "Unfollowed"
      * }
-     *
      * @response 400 {
      *  "message": "You cannot follow yourself"
      * }
-     *
-     * @response 404 {
-     *  "message": "No query results for model [User] ..."
-     * }
      */
-    public function toggleFollow(User $user, Request $request)
+    public function toggleFollow(Request $request, $user)
     {
         $follower = $request->user();
+        $target = User::findOrFail($user);
 
-        if ($follower->id === $user->id) {
+        if ($follower->id === $target->id) {
             return response()->json(['message' => 'You cannot follow yourself'], 400);
         }
 
         $existing = Follower::where('follower_id', $follower->id)
-            ->where('following_id', $user->id)
+            ->where('following_id', $target->id)
             ->first();
 
         if ($existing) {
@@ -62,9 +58,63 @@ class FollowerController extends Controller
 
         Follower::create([
             'follower_id' => $follower->id,
-            'following_id' => $user->id,
+            'following_id' => $target->id,
         ]);
 
         return response()->json(['message' => 'Followed']);
+    }
+
+    /**
+     * Get all followers of the authenticated user.
+     *
+     * Returns a list of users who are following you.
+     *
+     * @authenticated
+     *
+     * @response 200 [
+     *  {
+     *      "id": 3,
+     *      "name": "John Doe",
+     *      "email": "john@example.com"
+     *  }
+     * ]
+     */
+    public function followers(Request $request)
+    {
+        $user = $request->user();
+
+        $followers = Follower::where('following_id', $user->id)
+            ->with('follower:id,name,email')
+            ->get()
+            ->pluck('follower');
+
+        return response()->json($followers);
+    }
+
+    /**
+     * Get all users that the authenticated user is following.
+     *
+     * Returns a list of users that **you** follow.
+     *
+     * @authenticated
+     *
+     * @response 200 [
+     *  {
+     *      "id": 5,
+     *      "name": "Jane Smith",
+     *      "email": "jane@example.com"
+     *  }
+     * ]
+     */
+    public function following(Request $request)
+    {
+        $user = $request->user();
+
+        $following = Follower::where('follower_id', $user->id)
+            ->with('following:id,name,email')
+            ->get()
+            ->pluck('following');
+
+        return response()->json($following);
     }
 }

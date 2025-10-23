@@ -31,12 +31,14 @@ Route::post('/login', [AuthController::class, 'login']);
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
-    Route::post('/users/{user}/follow', [FollowerController::class, 'toggleFollow']);
+
 
 
     require __DIR__.'/message/message.php';
     require __DIR__.'/notification/notification.php';
     require __DIR__.'/post/post.php';
     require __DIR__.'/friend/friend.php';
+    require __DIR__.'/follow/follow.php';
+    require __DIR__.'/comment/comment.php';
 
 });

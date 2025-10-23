@@ -1,23 +1,21 @@
-name: Messaging
+name: Notifications
 description: |-
 
-  APIs for sending, retrieving, updating, and deleting messages
+  APIs for viewing, marking, and deleting notifications
 endpoints:
   -
     httpMethods:
       - GET
-    uri: api/messages
+    uri: api/notifications
     metadata:
-      groupName: Messaging
+      groupName: Notifications
       groupDescription: |-
 
-        APIs for sending, retrieving, updating, and deleting messages
+        APIs for viewing, marking, and deleting notifications
       subgroup: ''
       subgroupDescription: ''
-      title: 'Retrieve all messages for the authenticated user.'
-      description: |-
-        Retrieves messages where the authenticated user is either the sender or receiver,
-        including sender and receiver details.
+      title: 'Retrieve all notifications for the authenticated user.'
+      description: 'Returns the list of notifications for the authenticated user, ordered from newest to oldest.'
       authenticated: true
       deprecated: false
       custom: []
@@ -39,12 +37,10 @@ endpoints:
           [
            {
                "id": 1,
-               "sender_id": 1,
-               "receiver_id": 2,
-               "content": "Hello!",
-               "created_at": "2025-10-20T12:00:00Z",
-               "sender": {"id":1,"name":"Jane Doe"},
-               "receiver": {"id":2,"name":"John Smith"}
+               "type": "App\\Notifications\\PostLiked",
+               "data": {"post_id": 10, "message": "Someone liked your post"},
+               "is_read": false,
+               "created_at": "2025-10-20T12:00:00Z"
            }
           ]
         headers: []
@@ -62,104 +58,16 @@ endpoints:
   -
     httpMethods:
       - POST
-    uri: api/messages
+    uri: 'api/notifications/{id}/read'
     metadata:
-      groupName: Messaging
+      groupName: Notifications
       groupDescription: |-
 
-        APIs for sending, retrieving, updating, and deleting messages
+        APIs for viewing, marking, and deleting notifications
       subgroup: ''
       subgroupDescription: ''
-      title: 'Send a new message to another user.'
-      description: 'Allows the authenticated user to send a message to a specific user.'
-      authenticated: true
-      deprecated: false
-      custom: []
-    headers:
-      Authorization: 'Bearer Bearer {YOUR_TOKEN}'
-      Content-Type: application/json
-      Accept: application/json
-    urlParameters: []
-    cleanUrlParameters: []
-    queryParameters: []
-    cleanQueryParameters: []
-    bodyParameters:
-      receiver_id:
-        name: receiver_id
-        description: 'The ID of the user receiving the message.'
-        required: true
-        example: 2
-        type: integer
-        enumValues: []
-        exampleWasSpecified: true
-        nullable: false
-        custom: []
-      content:
-        name: content
-        description: 'The content of the message.'
-        required: true
-        example: '"Hello, how are you?"'
-        type: string
-        enumValues: []
-        exampleWasSpecified: true
-        nullable: false
-        custom: []
-    cleanBodyParameters:
-      receiver_id: 2
-      content: '"Hello, how are you?"'
-    fileParameters: []
-    responses:
-      -
-        status: 200
-        content: |-
-          {
-           "message": "Message sent",
-           "data": {
-               "id": 1,
-               "sender_id": 1,
-               "receiver_id": 2,
-               "content": "Hello, how are you?",
-               "created_at": "2025-10-20T12:00:00Z"
-           }
-          }
-        headers: []
-        description: ''
-        custom: []
-      -
-        status: 422
-        content: |-
-          {
-           "message": "The given data was invalid.",
-           "errors": {
-               "receiver_id": ["The selected receiver id is invalid."],
-               "content": ["The content field is required."]
-           }
-          }
-        headers: []
-        description: ''
-        custom: []
-    responseFields: []
-    auth:
-      - headers
-      - Authorization
-      - 'Bearer 3V5EgbkvZcDPa166h8fd4ae'
-    controller: null
-    method: null
-    route: null
-    custom: []
-  -
-    httpMethods:
-      - PUT
-    uri: 'api/messages/{message_id}'
-    metadata:
-      groupName: Messaging
-      groupDescription: |-
-
-        APIs for sending, retrieving, updating, and deleting messages
-      subgroup: ''
-      subgroupDescription: ''
-      title: 'Update a message.'
-      description: 'Allows the sender of a message to update its content.'
+      title: 'Mark a notification as read.'
+      description: 'Marks the notification with the specified ID as read for the authenticated user.'
       authenticated: true
       deprecated: false
       custom: []
@@ -168,19 +76,9 @@ endpoints:
       Content-Type: application/json
       Accept: application/json
     urlParameters:
-      message_id:
-        name: message_id
-        description: 'The ID of the message.'
-        required: true
-        example: 1
-        type: integer
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        custom: []
-      message:
-        name: message
-        description: 'The ID of the message to update.'
+      id:
+        name: id
+        description: 'The ID of the notification.'
         required: true
         example: 17
         type: integer
@@ -189,58 +87,27 @@ endpoints:
         nullable: false
         custom: []
     cleanUrlParameters:
-      message_id: 1
-      message: 17
+      id: 17
     queryParameters: []
     cleanQueryParameters: []
-    bodyParameters:
-      content:
-        name: content
-        description: 'The updated message content.'
-        required: true
-        example: '"Updated message"'
-        type: string
-        enumValues: []
-        exampleWasSpecified: true
-        nullable: false
-        custom: []
-    cleanBodyParameters:
-      content: '"Updated message"'
+    bodyParameters: []
+    cleanBodyParameters: []
     fileParameters: []
     responses:
       -
         status: 200
         content: |-
           {
-           "message": "Message updated",
-           "data": {
-               "id": 1,
-               "sender_id": 1,
-               "receiver_id": 2,
-               "content": "Updated message",
-               "created_at": "2025-10-20T12:00:00Z"
-           }
+           "message": "Notification marked as read"
           }
         headers: []
         description: ''
         custom: []
       -
-        status: 403
+        status: 404
         content: |-
           {
-           "message": "You do not have permission to update this message."
-          }
-        headers: []
-        description: ''
-        custom: []
-      -
-        status: 422
-        content: |-
-          {
-           "message": "The given data was invalid.",
-           "errors": {
-               "content": ["The content field is required."]
-           }
+           "message": "No query results for model [Notification] ..."
           }
         headers: []
         description: ''
@@ -257,16 +124,16 @@ endpoints:
   -
     httpMethods:
       - DELETE
-    uri: 'api/messages/{message_id}'
+    uri: 'api/notifications/{id}'
     metadata:
-      groupName: Messaging
+      groupName: Notifications
       groupDescription: |-
 
-        APIs for sending, retrieving, updating, and deleting messages
+        APIs for viewing, marking, and deleting notifications
       subgroup: ''
       subgroupDescription: ''
-      title: 'Delete a message.'
-      description: 'Allows the sender of a message to delete it.'
+      title: 'Delete a notification.'
+      description: 'Deletes the notification with the specified ID for the authenticated user.'
       authenticated: true
       deprecated: false
       custom: []
@@ -275,19 +142,9 @@ endpoints:
       Content-Type: application/json
       Accept: application/json
     urlParameters:
-      message_id:
-        name: message_id
-        description: 'The ID of the message.'
-        required: true
-        example: 1
-        type: integer
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        custom: []
-      message:
-        name: message
-        description: 'The ID of the message to delete.'
+      id:
+        name: id
+        description: 'The ID of the notification.'
         required: true
         example: 17
         type: integer
@@ -296,8 +153,7 @@ endpoints:
         nullable: false
         custom: []
     cleanUrlParameters:
-      message_id: 1
-      message: 17
+      id: 17
     queryParameters: []
     cleanQueryParameters: []
     bodyParameters: []
@@ -308,16 +164,16 @@ endpoints:
         status: 200
         content: |-
           {
-           "message": "Message deleted"
+           "message": "Notification deleted"
           }
         headers: []
         description: ''
         custom: []
       -
-        status: 403
+        status: 404
         content: |-
           {
-           "message": "You do not have permission to delete this message."
+           "message": "No query results for model [Notification] ..."
           }
         headers: []
         description: ''

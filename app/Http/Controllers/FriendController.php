@@ -27,7 +27,6 @@ class FriendController extends Controller
      *    "friend_id": 1,
      *    "status": "pending",
      *    "created_at": "2025-10-20T05:00:00.000000Z",
-     *    "updated_at": "2025-10-20T05:00:00.000000Z",
      *    "sender": {
      *        "id": 2,
      *        "name": "Jane Doe"
@@ -49,6 +48,83 @@ class FriendController extends Controller
     }
 
     /**
+     * List all accepted friends.
+     *
+     * Returns all users that the authenticated user is friends with (status: accepted).
+     *
+     * @authenticated
+     *
+     * @response 200 [
+     *  {
+     *    "id": 1,
+     *    "user_id": 3,
+     *    "friend_id": 2,
+     *    "status": "accepted",
+     *    "friend": {
+     *        "id": 2,
+     *        "name": "Jane Doe"
+     *    }
+     *  }
+     * ]
+     */
+    public function listFriends(Request $request)
+    {
+        $user = $request->user();
+
+        $friends = Friend::with(['friend', 'user'])
+            ->where(function ($q) use ($user) {
+                $q->where('user_id', $user->id)
+                  ->orWhere('friend_id', $user->id);
+            })
+            ->where('status', 'accepted')
+            ->get();
+
+        // Transform so it always returns the "other" user as friend
+        $friends = $friends->map(function ($f) use ($user) {
+            return [
+                'id' => $f->id,
+                'status' => $f->status,
+                'friend' => $f->user_id === $user->id ? $f->friend : $f->user,
+            ];
+        });
+
+        return response()->json($friends);
+    }
+
+    /**
+     * List pending friend requests sent by the authenticated user.
+     *
+     * Returns all friend requests the authenticated user has sent that are still pending.
+     *
+     * @authenticated
+     *
+     * @response 200 [
+     *  {
+     *    "id": 6,
+     *    "user_id": 1,
+     *    "friend_id": 2,
+     *    "status": "pending",
+     *    "friend": {
+     *        "id": 2,
+     *        "name": "Jane Doe"
+     *    }
+     *  }
+     * ]
+     */
+    public function listPending(Request $request)
+    {
+        $user = $request->user();
+
+        $pending = Friend::with('friend')
+            ->where('user_id', $user->id)
+            ->where('status', 'pending')
+            ->latest()
+            ->get();
+
+        return response()->json($pending);
+    }
+
+    /**
      * Send a friend request.
      *
      * @authenticated
@@ -59,42 +135,45 @@ class FriendController extends Controller
      *  "message": "Friend request sent"
      * }
      */
-public function sendRequest(Request $request)
-{
-    $request->validate(['friend_id' => 'required|exists:users,id']);
+    public function sendRequest(Request $request)
+    {
+        $request->validate(['friend_id' => 'required|exists:users,id']);
 
-    $user = $request->user();
-    $friendId = $request->friend_id;
+        $user = $request->user();
+        $friendId = $request->friend_id;
 
-    if ($user->id === $friendId) {
-        return response()->json(['message' => 'You cannot send a friend request to yourself'], 400);
+        if ($user->id === $friendId) {
+            return response()->json(['message' => 'You cannot send a friend request to yourself'], 400);
+        }
+
+        $existing = Friend::where(function ($q) use ($user, $friendId) {
+            $q->where('user_id', $user->id)
+              ->where('friend_id', $friendId);
+        })->orWhere(function ($q) use ($user, $friendId) {
+            $q->where('user_id', $friendId)
+              ->where('friend_id', $user->id);
+        })->first();
+
+        if ($existing) {
+            return response()->json(['message' => 'Friend request already exists'], 400);
+        }
+
+        $friendRequest = Friend::create([
+            'user_id' => $user->id,
+            'friend_id' => $friendId,
+            'status' => 'pending'
+        ]);
+
+        // Create notification for receiver
+        $friendRequest->notifications()->create([
+            'user_id' => $friendId,
+            'type' => 'friend_request',
+            'reference_id' => $friendRequest->id,
+            'is_read' => false,
+        ]);
+
+        return response()->json(['message' => 'Friend request sent']);
     }
-
-    $existing = Friend::where('user_id', $user->id)
-        ->where('friend_id', $friendId)
-        ->first();
-
-    if ($existing) {
-        return response()->json(['message' => 'Friend request already exists'], 400);
-    }
-
-    // Create friend request
-    $friendRequest = Friend::create([
-        'user_id' => $user->id,
-        'friend_id' => $friendId,
-        'status' => 'pending'
-    ]);
-
-    // Create notification for the receiver
-    $friendRequest->notifications()->create([
-        'user_id' => $friendId,
-        'type' => 'friend_request',
-        'reference_id' => $friendRequest->id,
-        'is_read' => false,
-    ]);
-
-    return response()->json(['message' => 'Friend request sent']);
-}
 
     /**
      * Accept a friend request.

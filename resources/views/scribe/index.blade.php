@@ -82,6 +82,22 @@
                             </li>
                                                                         </ul>
                             </ul>
+                    <ul id="tocify-header-comments" class="tocify-header">
+                <li class="tocify-item level-1" data-unique="comments">
+                    <a href="#comments">Comments</a>
+                </li>
+                                    <ul id="tocify-subheader-comments" class="tocify-subheader">
+                                                    <li class="tocify-item level-2" data-unique="comments-POSTapi-comments">
+                                <a href="#comments-POSTapi-comments">Add a comment to a post.</a>
+                            </li>
+                                                                                <li class="tocify-item level-2" data-unique="comments-PUTapi-comments--comment_id-">
+                                <a href="#comments-PUTapi-comments--comment_id-">Update a comment.</a>
+                            </li>
+                                                                                <li class="tocify-item level-2" data-unique="comments-DELETEapi-comments--comment_id-">
+                                <a href="#comments-DELETEapi-comments--comment_id-">Delete a comment.</a>
+                            </li>
+                                                                        </ul>
+                            </ul>
                     <ul id="tocify-header-endpoints" class="tocify-header">
                 <li class="tocify-item level-1" data-unique="endpoints">
                     <a href="#endpoints">Endpoints</a>
@@ -97,8 +113,14 @@
                     <a href="#followers">Followers</a>
                 </li>
                                     <ul id="tocify-subheader-followers" class="tocify-subheader">
-                                                    <li class="tocify-item level-2" data-unique="followers-POSTapi-users--user_id--follow">
-                                <a href="#followers-POSTapi-users--user_id--follow">Toggle following a user.</a>
+                                                    <li class="tocify-item level-2" data-unique="followers-POSTapi-follow--user-">
+                                <a href="#followers-POSTapi-follow--user-">Follow or unfollow another user.</a>
+                            </li>
+                                                                                <li class="tocify-item level-2" data-unique="followers-GETapi-followers">
+                                <a href="#followers-GETapi-followers">Get all followers of the authenticated user.</a>
+                            </li>
+                                                                                <li class="tocify-item level-2" data-unique="followers-GETapi-following">
+                                <a href="#followers-GETapi-following">Get all users that the authenticated user is following.</a>
                             </li>
                                                                         </ul>
                             </ul>
@@ -107,11 +129,17 @@
                     <a href="#friends">Friends</a>
                 </li>
                                     <ul id="tocify-subheader-friends" class="tocify-subheader">
-                                                    <li class="tocify-item level-2" data-unique="friends-GETapi-friends-requests">
+                                                    <li class="tocify-item level-2" data-unique="friends-GETapi-friends">
+                                <a href="#friends-GETapi-friends">List all accepted friends.</a>
+                            </li>
+                                                                                <li class="tocify-item level-2" data-unique="friends-GETapi-friends-pending">
+                                <a href="#friends-GETapi-friends-pending">List pending friend requests sent by the authenticated user.</a>
+                            </li>
+                                                                                <li class="tocify-item level-2" data-unique="friends-GETapi-friends-requests">
                                 <a href="#friends-GETapi-friends-requests">List incoming friend requests.</a>
                             </li>
-                                                                                <li class="tocify-item level-2" data-unique="friends-POSTapi-friends-request">
-                                <a href="#friends-POSTapi-friends-request">Send a friend request.</a>
+                                                                                <li class="tocify-item level-2" data-unique="friends-POSTapi-friends-send">
+                                <a href="#friends-POSTapi-friends-send">Send a friend request.</a>
                             </li>
                                                                                 <li class="tocify-item level-2" data-unique="friends-POSTapi-friends-accept">
                                 <a href="#friends-POSTapi-friends-accept">Accept a friend request.</a>
@@ -713,6 +741,507 @@ You can check the Dev Tools console for debugging information.</code></pre>
             </div>
                         </form>
 
+                <h1 id="comments">Comments</h1>
+
+    <p>APIs for creating, updating, and deleting comments on posts.</p>
+
+                                <h2 id="comments-POSTapi-comments">Add a comment to a post.</h2>
+
+<p>
+<small class="badge badge-darkred">requires authentication</small>
+</p>
+
+<p>The authenticated user can comment on a post or reply to another comment.</p>
+<p>You <strong>don’t need to send your user ID</strong> — it’s automatically taken from your access token.</p>
+
+<span id="example-requests-POSTapi-comments">
+<blockquote>Example request:</blockquote>
+
+
+<div class="bash-example">
+    <pre><code class="language-bash">curl --request POST \
+    "http://127.0.0.1:8000/api/comments" \
+    --header "Authorization: Bearer Bearer {YOUR_TOKEN}" \
+    --header "Content-Type: application/json" \
+    --header "Accept: application/json" \
+    --data "{
+    \"post_id\": 1,
+    \"content\": \"\\\"Nice post!\\\"\",
+    \"parent_comment_id\": 5
+}"
+</code></pre></div>
+
+
+<div class="javascript-example">
+    <pre><code class="language-javascript">const url = new URL(
+    "http://127.0.0.1:8000/api/comments"
+);
+
+const headers = {
+    "Authorization": "Bearer Bearer {YOUR_TOKEN}",
+    "Content-Type": "application/json",
+    "Accept": "application/json",
+};
+
+let body = {
+    "post_id": 1,
+    "content": "\"Nice post!\"",
+    "parent_comment_id": 5
+};
+
+fetch(url, {
+    method: "POST",
+    headers,
+    body: JSON.stringify(body),
+}).then(response =&gt; response.json());</code></pre></div>
+
+</span>
+
+<span id="example-responses-POSTapi-comments">
+            <blockquote>
+            <p>Example response (200):</p>
+        </blockquote>
+                <pre>
+
+<code class="language-json" style="max-height: 300px;">{
+    &quot;message&quot;: &quot;Comment added&quot;,
+    &quot;comment&quot;: {
+        &quot;id&quot;: 10,
+        &quot;post_id&quot;: 1,
+        &quot;user_id&quot;: 2,
+        &quot;content&quot;: &quot;Nice post!&quot;,
+        &quot;parent_comment_id&quot;: null
+    }
+}</code>
+ </pre>
+    </span>
+<span id="execution-results-POSTapi-comments" hidden>
+    <blockquote>Received response<span
+                id="execution-response-status-POSTapi-comments"></span>:
+    </blockquote>
+    <pre class="json"><code id="execution-response-content-POSTapi-comments"
+      data-empty-response-text="<Empty response>" style="max-height: 400px;"></code></pre>
+</span>
+<span id="execution-error-POSTapi-comments" hidden>
+    <blockquote>Request failed with error:</blockquote>
+    <pre><code id="execution-error-message-POSTapi-comments">
+
+Tip: Check that you&#039;re properly connected to the network.
+If you&#039;re a maintainer of ths API, verify that your API is running and you&#039;ve enabled CORS.
+You can check the Dev Tools console for debugging information.</code></pre>
+</span>
+<form id="form-POSTapi-comments" data-method="POST"
+      data-path="api/comments"
+      data-authed="1"
+      data-hasfiles="0"
+      data-isarraybody="0"
+      autocomplete="off"
+      onsubmit="event.preventDefault(); executeTryOut('POSTapi-comments', this);">
+    <h3>
+        Request&nbsp;&nbsp;&nbsp;
+                    <button type="button"
+                    style="background-color: #8fbcd4; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-tryout-POSTapi-comments"
+                    onclick="tryItOut('POSTapi-comments');">Try it out ⚡
+            </button>
+            <button type="button"
+                    style="background-color: #c97a7e; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-canceltryout-POSTapi-comments"
+                    onclick="cancelTryOut('POSTapi-comments');" hidden>Cancel 🛑
+            </button>&nbsp;&nbsp;
+            <button type="submit"
+                    style="background-color: #6ac174; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-executetryout-POSTapi-comments"
+                    data-initial-text="Send Request 💥"
+                    data-loading-text="⏱ Sending..."
+                    hidden>Send Request 💥
+            </button>
+            </h3>
+            <p>
+            <small class="badge badge-black">POST</small>
+            <b><code>api/comments</code></b>
+        </p>
+                <h4 class="fancy-heading-panel"><b>Headers</b></h4>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Authorization</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Authorization" class="auth-value"               data-endpoint="POSTapi-comments"
+               value="Bearer Bearer {YOUR_TOKEN}"
+               data-component="header">
+    <br>
+<p>Example: <code>Bearer Bearer {YOUR_TOKEN}</code></p>
+            </div>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Content-Type</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Content-Type"                data-endpoint="POSTapi-comments"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Accept</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Accept"                data-endpoint="POSTapi-comments"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                                <h4 class="fancy-heading-panel"><b>Body Parameters</b></h4>
+        <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>post_id</code></b>&nbsp;&nbsp;
+<small>integer</small>&nbsp;
+ &nbsp;
+                <input type="number" style="display: none"
+               step="any"               name="post_id"                data-endpoint="POSTapi-comments"
+               value="1"
+               data-component="body">
+    <br>
+<p>The ID of the post to comment on. Example: <code>1</code></p>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>content</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="content"                data-endpoint="POSTapi-comments"
+               value=""Nice post!""
+               data-component="body">
+    <br>
+<p>The content of the comment. Example: <code>"Nice post!"</code></p>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>parent_comment_id</code></b>&nbsp;&nbsp;
+<small>integer</small>&nbsp;
+<i>optional</i> &nbsp;
+                <input type="number" style="display: none"
+               step="any"               name="parent_comment_id"                data-endpoint="POSTapi-comments"
+               value="5"
+               data-component="body">
+    <br>
+<p>The ID of the parent comment if replying. Example: <code>5</code></p>
+        </div>
+        </form>
+
+                    <h2 id="comments-PUTapi-comments--comment_id-">Update a comment.</h2>
+
+<p>
+<small class="badge badge-darkred">requires authentication</small>
+</p>
+
+<p>Only the user who created the comment can update it.</p>
+
+<span id="example-requests-PUTapi-comments--comment_id-">
+<blockquote>Example request:</blockquote>
+
+
+<div class="bash-example">
+    <pre><code class="language-bash">curl --request PUT \
+    "http://127.0.0.1:8000/api/comments/10" \
+    --header "Authorization: Bearer Bearer {YOUR_TOKEN}" \
+    --header "Content-Type: application/json" \
+    --header "Accept: application/json" \
+    --data "{
+    \"content\": \"\\\"Updated comment!\\\"\"
+}"
+</code></pre></div>
+
+
+<div class="javascript-example">
+    <pre><code class="language-javascript">const url = new URL(
+    "http://127.0.0.1:8000/api/comments/10"
+);
+
+const headers = {
+    "Authorization": "Bearer Bearer {YOUR_TOKEN}",
+    "Content-Type": "application/json",
+    "Accept": "application/json",
+};
+
+let body = {
+    "content": "\"Updated comment!\""
+};
+
+fetch(url, {
+    method: "PUT",
+    headers,
+    body: JSON.stringify(body),
+}).then(response =&gt; response.json());</code></pre></div>
+
+</span>
+
+<span id="example-responses-PUTapi-comments--comment_id-">
+            <blockquote>
+            <p>Example response (200):</p>
+        </blockquote>
+                <pre>
+
+<code class="language-json" style="max-height: 300px;">{
+    &quot;message&quot;: &quot;Comment updated&quot;,
+    &quot;comment&quot;: {
+        &quot;id&quot;: 10,
+        &quot;content&quot;: &quot;Updated comment!&quot;
+    }
+}</code>
+ </pre>
+    </span>
+<span id="execution-results-PUTapi-comments--comment_id-" hidden>
+    <blockquote>Received response<span
+                id="execution-response-status-PUTapi-comments--comment_id-"></span>:
+    </blockquote>
+    <pre class="json"><code id="execution-response-content-PUTapi-comments--comment_id-"
+      data-empty-response-text="<Empty response>" style="max-height: 400px;"></code></pre>
+</span>
+<span id="execution-error-PUTapi-comments--comment_id-" hidden>
+    <blockquote>Request failed with error:</blockquote>
+    <pre><code id="execution-error-message-PUTapi-comments--comment_id-">
+
+Tip: Check that you&#039;re properly connected to the network.
+If you&#039;re a maintainer of ths API, verify that your API is running and you&#039;ve enabled CORS.
+You can check the Dev Tools console for debugging information.</code></pre>
+</span>
+<form id="form-PUTapi-comments--comment_id-" data-method="PUT"
+      data-path="api/comments/{comment_id}"
+      data-authed="1"
+      data-hasfiles="0"
+      data-isarraybody="0"
+      autocomplete="off"
+      onsubmit="event.preventDefault(); executeTryOut('PUTapi-comments--comment_id-', this);">
+    <h3>
+        Request&nbsp;&nbsp;&nbsp;
+                    <button type="button"
+                    style="background-color: #8fbcd4; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-tryout-PUTapi-comments--comment_id-"
+                    onclick="tryItOut('PUTapi-comments--comment_id-');">Try it out ⚡
+            </button>
+            <button type="button"
+                    style="background-color: #c97a7e; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-canceltryout-PUTapi-comments--comment_id-"
+                    onclick="cancelTryOut('PUTapi-comments--comment_id-');" hidden>Cancel 🛑
+            </button>&nbsp;&nbsp;
+            <button type="submit"
+                    style="background-color: #6ac174; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-executetryout-PUTapi-comments--comment_id-"
+                    data-initial-text="Send Request 💥"
+                    data-loading-text="⏱ Sending..."
+                    hidden>Send Request 💥
+            </button>
+            </h3>
+            <p>
+            <small class="badge badge-darkblue">PUT</small>
+            <b><code>api/comments/{comment_id}</code></b>
+        </p>
+                <h4 class="fancy-heading-panel"><b>Headers</b></h4>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Authorization</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Authorization" class="auth-value"               data-endpoint="PUTapi-comments--comment_id-"
+               value="Bearer Bearer {YOUR_TOKEN}"
+               data-component="header">
+    <br>
+<p>Example: <code>Bearer Bearer {YOUR_TOKEN}</code></p>
+            </div>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Content-Type</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Content-Type"                data-endpoint="PUTapi-comments--comment_id-"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Accept</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Accept"                data-endpoint="PUTapi-comments--comment_id-"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                        <h4 class="fancy-heading-panel"><b>URL Parameters</b></h4>
+                    <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>comment_id</code></b>&nbsp;&nbsp;
+<small>integer</small>&nbsp;
+ &nbsp;
+                <input type="number" style="display: none"
+               step="any"               name="comment_id"                data-endpoint="PUTapi-comments--comment_id-"
+               value="10"
+               data-component="url">
+    <br>
+<p>The ID of the comment to update. Example: <code>10</code></p>
+            </div>
+                            <h4 class="fancy-heading-panel"><b>Body Parameters</b></h4>
+        <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>content</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="content"                data-endpoint="PUTapi-comments--comment_id-"
+               value=""Updated comment!""
+               data-component="body">
+    <br>
+<p>The updated content. Example: <code>"Updated comment!"</code></p>
+        </div>
+        </form>
+
+                    <h2 id="comments-DELETEapi-comments--comment_id-">Delete a comment.</h2>
+
+<p>
+<small class="badge badge-darkred">requires authentication</small>
+</p>
+
+<p>Only the user who created the comment can delete it.</p>
+
+<span id="example-requests-DELETEapi-comments--comment_id-">
+<blockquote>Example request:</blockquote>
+
+
+<div class="bash-example">
+    <pre><code class="language-bash">curl --request DELETE \
+    "http://127.0.0.1:8000/api/comments/10" \
+    --header "Authorization: Bearer Bearer {YOUR_TOKEN}" \
+    --header "Content-Type: application/json" \
+    --header "Accept: application/json"</code></pre></div>
+
+
+<div class="javascript-example">
+    <pre><code class="language-javascript">const url = new URL(
+    "http://127.0.0.1:8000/api/comments/10"
+);
+
+const headers = {
+    "Authorization": "Bearer Bearer {YOUR_TOKEN}",
+    "Content-Type": "application/json",
+    "Accept": "application/json",
+};
+
+fetch(url, {
+    method: "DELETE",
+    headers,
+}).then(response =&gt; response.json());</code></pre></div>
+
+</span>
+
+<span id="example-responses-DELETEapi-comments--comment_id-">
+            <blockquote>
+            <p>Example response (200):</p>
+        </blockquote>
+                <pre>
+
+<code class="language-json" style="max-height: 300px;">{
+    &quot;message&quot;: &quot;Comment deleted&quot;
+}</code>
+ </pre>
+    </span>
+<span id="execution-results-DELETEapi-comments--comment_id-" hidden>
+    <blockquote>Received response<span
+                id="execution-response-status-DELETEapi-comments--comment_id-"></span>:
+    </blockquote>
+    <pre class="json"><code id="execution-response-content-DELETEapi-comments--comment_id-"
+      data-empty-response-text="<Empty response>" style="max-height: 400px;"></code></pre>
+</span>
+<span id="execution-error-DELETEapi-comments--comment_id-" hidden>
+    <blockquote>Request failed with error:</blockquote>
+    <pre><code id="execution-error-message-DELETEapi-comments--comment_id-">
+
+Tip: Check that you&#039;re properly connected to the network.
+If you&#039;re a maintainer of ths API, verify that your API is running and you&#039;ve enabled CORS.
+You can check the Dev Tools console for debugging information.</code></pre>
+</span>
+<form id="form-DELETEapi-comments--comment_id-" data-method="DELETE"
+      data-path="api/comments/{comment_id}"
+      data-authed="1"
+      data-hasfiles="0"
+      data-isarraybody="0"
+      autocomplete="off"
+      onsubmit="event.preventDefault(); executeTryOut('DELETEapi-comments--comment_id-', this);">
+    <h3>
+        Request&nbsp;&nbsp;&nbsp;
+                    <button type="button"
+                    style="background-color: #8fbcd4; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-tryout-DELETEapi-comments--comment_id-"
+                    onclick="tryItOut('DELETEapi-comments--comment_id-');">Try it out ⚡
+            </button>
+            <button type="button"
+                    style="background-color: #c97a7e; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-canceltryout-DELETEapi-comments--comment_id-"
+                    onclick="cancelTryOut('DELETEapi-comments--comment_id-');" hidden>Cancel 🛑
+            </button>&nbsp;&nbsp;
+            <button type="submit"
+                    style="background-color: #6ac174; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-executetryout-DELETEapi-comments--comment_id-"
+                    data-initial-text="Send Request 💥"
+                    data-loading-text="⏱ Sending..."
+                    hidden>Send Request 💥
+            </button>
+            </h3>
+            <p>
+            <small class="badge badge-red">DELETE</small>
+            <b><code>api/comments/{comment_id}</code></b>
+        </p>
+                <h4 class="fancy-heading-panel"><b>Headers</b></h4>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Authorization</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Authorization" class="auth-value"               data-endpoint="DELETEapi-comments--comment_id-"
+               value="Bearer Bearer {YOUR_TOKEN}"
+               data-component="header">
+    <br>
+<p>Example: <code>Bearer Bearer {YOUR_TOKEN}</code></p>
+            </div>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Content-Type</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Content-Type"                data-endpoint="DELETEapi-comments--comment_id-"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Accept</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Accept"                data-endpoint="DELETEapi-comments--comment_id-"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                        <h4 class="fancy-heading-panel"><b>URL Parameters</b></h4>
+                    <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>comment_id</code></b>&nbsp;&nbsp;
+<small>integer</small>&nbsp;
+ &nbsp;
+                <input type="number" style="display: none"
+               step="any"               name="comment_id"                data-endpoint="DELETEapi-comments--comment_id-"
+               value="10"
+               data-component="url">
+    <br>
+<p>The ID of the comment to delete. Example: <code>10</code></p>
+            </div>
+                    </form>
+
                 <h1 id="endpoints">Endpoints</h1>
 
     
@@ -857,24 +1386,29 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
                 <h1 id="followers">Followers</h1>
 
-    <p>APIs for following and unfollowing users</p>
+    <p>APIs for following, unfollowing, and viewing followers.</p>
 
-                                <h2 id="followers-POSTapi-users--user_id--follow">Toggle following a user.</h2>
+                                <h2 id="followers-POSTapi-follow--user-">Follow or unfollow another user.</h2>
 
 <p>
 <small class="badge badge-darkred">requires authentication</small>
 </p>
 
-<p>If the authenticated user is not already following the target user, this endpoint will follow them.
-If already following, it will unfollow the user.</p>
+<p>This endpoint allows the <strong>authenticated user</strong> to follow or unfollow another user.
+You <strong>do not need to send your own user ID</strong> — it’s automatically detected from your token.</p>
+<p><strong>Behavior:</strong></p>
+<ul>
+<li>If you are not yet following the target user → it will follow them.</li>
+<li>If you are already following the target user → it will unfollow them.</li>
+</ul>
 
-<span id="example-requests-POSTapi-users--user_id--follow">
+<span id="example-requests-POSTapi-follow--user-">
 <blockquote>Example request:</blockquote>
 
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request POST \
-    "http://127.0.0.1:8000/api/users/1/follow" \
+    "http://127.0.0.1:8000/api/follow/5" \
     --header "Authorization: Bearer Bearer {YOUR_TOKEN}" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json"</code></pre></div>
@@ -882,7 +1416,7 @@ If already following, it will unfollow the user.</p>
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "http://127.0.0.1:8000/api/users/1/follow"
+    "http://127.0.0.1:8000/api/follow/5"
 );
 
 const headers = {
@@ -898,7 +1432,7 @@ fetch(url, {
 
 </span>
 
-<span id="example-responses-POSTapi-users--user_id--follow">
+<span id="example-responses-POSTapi-follow--user-">
             <blockquote>
             <p>Example response (200):</p>
         </blockquote>
@@ -926,53 +1460,44 @@ fetch(url, {
     &quot;message&quot;: &quot;You cannot follow yourself&quot;
 }</code>
  </pre>
-            <blockquote>
-            <p>Example response (404):</p>
-        </blockquote>
-                <pre>
-
-<code class="language-json" style="max-height: 300px;">{
-    &quot;message&quot;: &quot;No query results for model [User] ...&quot;
-}</code>
- </pre>
     </span>
-<span id="execution-results-POSTapi-users--user_id--follow" hidden>
+<span id="execution-results-POSTapi-follow--user-" hidden>
     <blockquote>Received response<span
-                id="execution-response-status-POSTapi-users--user_id--follow"></span>:
+                id="execution-response-status-POSTapi-follow--user-"></span>:
     </blockquote>
-    <pre class="json"><code id="execution-response-content-POSTapi-users--user_id--follow"
+    <pre class="json"><code id="execution-response-content-POSTapi-follow--user-"
       data-empty-response-text="<Empty response>" style="max-height: 400px;"></code></pre>
 </span>
-<span id="execution-error-POSTapi-users--user_id--follow" hidden>
+<span id="execution-error-POSTapi-follow--user-" hidden>
     <blockquote>Request failed with error:</blockquote>
-    <pre><code id="execution-error-message-POSTapi-users--user_id--follow">
+    <pre><code id="execution-error-message-POSTapi-follow--user-">
 
 Tip: Check that you&#039;re properly connected to the network.
 If you&#039;re a maintainer of ths API, verify that your API is running and you&#039;ve enabled CORS.
 You can check the Dev Tools console for debugging information.</code></pre>
 </span>
-<form id="form-POSTapi-users--user_id--follow" data-method="POST"
-      data-path="api/users/{user_id}/follow"
+<form id="form-POSTapi-follow--user-" data-method="POST"
+      data-path="api/follow/{user}"
       data-authed="1"
       data-hasfiles="0"
       data-isarraybody="0"
       autocomplete="off"
-      onsubmit="event.preventDefault(); executeTryOut('POSTapi-users--user_id--follow', this);">
+      onsubmit="event.preventDefault(); executeTryOut('POSTapi-follow--user-', this);">
     <h3>
         Request&nbsp;&nbsp;&nbsp;
                     <button type="button"
                     style="background-color: #8fbcd4; padding: 5px 10px; border-radius: 5px; border-width: thin;"
-                    id="btn-tryout-POSTapi-users--user_id--follow"
-                    onclick="tryItOut('POSTapi-users--user_id--follow');">Try it out ⚡
+                    id="btn-tryout-POSTapi-follow--user-"
+                    onclick="tryItOut('POSTapi-follow--user-');">Try it out ⚡
             </button>
             <button type="button"
                     style="background-color: #c97a7e; padding: 5px 10px; border-radius: 5px; border-width: thin;"
-                    id="btn-canceltryout-POSTapi-users--user_id--follow"
-                    onclick="cancelTryOut('POSTapi-users--user_id--follow');" hidden>Cancel 🛑
+                    id="btn-canceltryout-POSTapi-follow--user-"
+                    onclick="cancelTryOut('POSTapi-follow--user-');" hidden>Cancel 🛑
             </button>&nbsp;&nbsp;
             <button type="submit"
                     style="background-color: #6ac174; padding: 5px 10px; border-radius: 5px; border-width: thin;"
-                    id="btn-executetryout-POSTapi-users--user_id--follow"
+                    id="btn-executetryout-POSTapi-follow--user-"
                     data-initial-text="Send Request 💥"
                     data-loading-text="⏱ Sending..."
                     hidden>Send Request 💥
@@ -980,7 +1505,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
             </h3>
             <p>
             <small class="badge badge-black">POST</small>
-            <b><code>api/users/{user_id}/follow</code></b>
+            <b><code>api/follow/{user}</code></b>
         </p>
                 <h4 class="fancy-heading-panel"><b>Headers</b></h4>
                                 <div style="padding-left: 28px; clear: unset;">
@@ -988,7 +1513,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 &nbsp;
  &nbsp;
                 <input type="text" style="display: none"
-                              name="Authorization" class="auth-value"               data-endpoint="POSTapi-users--user_id--follow"
+                              name="Authorization" class="auth-value"               data-endpoint="POSTapi-follow--user-"
                value="Bearer Bearer {YOUR_TOKEN}"
                data-component="header">
     <br>
@@ -999,7 +1524,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 &nbsp;
  &nbsp;
                 <input type="text" style="display: none"
-                              name="Content-Type"                data-endpoint="POSTapi-users--user_id--follow"
+                              name="Content-Type"                data-endpoint="POSTapi-follow--user-"
                value="application/json"
                data-component="header">
     <br>
@@ -1010,7 +1535,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 &nbsp;
  &nbsp;
                 <input type="text" style="display: none"
-                              name="Accept"                data-endpoint="POSTapi-users--user_id--follow"
+                              name="Accept"                data-endpoint="POSTapi-follow--user-"
                value="application/json"
                data-component="header">
     <br>
@@ -1018,34 +1543,573 @@ You can check the Dev Tools console for debugging information.</code></pre>
             </div>
                         <h4 class="fancy-heading-panel"><b>URL Parameters</b></h4>
                     <div style="padding-left: 28px; clear: unset;">
-                <b style="line-height: 2;"><code>user_id</code></b>&nbsp;&nbsp;
-<small>integer</small>&nbsp;
- &nbsp;
-                <input type="number" style="display: none"
-               step="any"               name="user_id"                data-endpoint="POSTapi-users--user_id--follow"
-               value="1"
-               data-component="url">
-    <br>
-<p>The ID of the user. Example: <code>1</code></p>
-            </div>
-                    <div style="padding-left: 28px; clear: unset;">
                 <b style="line-height: 2;"><code>user</code></b>&nbsp;&nbsp;
 <small>integer</small>&nbsp;
  &nbsp;
                 <input type="number" style="display: none"
-               step="any"               name="user"                data-endpoint="POSTapi-users--user_id--follow"
-               value="17"
+               step="any"               name="user"                data-endpoint="POSTapi-follow--user-"
+               value="5"
                data-component="url">
     <br>
-<p>The ID of the user to follow or unfollow. Example: <code>17</code></p>
+<p>The ID of the user you want to follow or unfollow. Example: <code>5</code></p>
             </div>
                     </form>
+
+                    <h2 id="followers-GETapi-followers">Get all followers of the authenticated user.</h2>
+
+<p>
+<small class="badge badge-darkred">requires authentication</small>
+</p>
+
+<p>Returns a list of users who are following you.</p>
+
+<span id="example-requests-GETapi-followers">
+<blockquote>Example request:</blockquote>
+
+
+<div class="bash-example">
+    <pre><code class="language-bash">curl --request GET \
+    --get "http://127.0.0.1:8000/api/followers" \
+    --header "Authorization: Bearer Bearer {YOUR_TOKEN}" \
+    --header "Content-Type: application/json" \
+    --header "Accept: application/json"</code></pre></div>
+
+
+<div class="javascript-example">
+    <pre><code class="language-javascript">const url = new URL(
+    "http://127.0.0.1:8000/api/followers"
+);
+
+const headers = {
+    "Authorization": "Bearer Bearer {YOUR_TOKEN}",
+    "Content-Type": "application/json",
+    "Accept": "application/json",
+};
+
+fetch(url, {
+    method: "GET",
+    headers,
+}).then(response =&gt; response.json());</code></pre></div>
+
+</span>
+
+<span id="example-responses-GETapi-followers">
+            <blockquote>
+            <p>Example response (200):</p>
+        </blockquote>
+                <pre>
+
+<code class="language-json" style="max-height: 300px;">[
+    {
+        &quot;id&quot;: 3,
+        &quot;name&quot;: &quot;John Doe&quot;,
+        &quot;email&quot;: &quot;john@example.com&quot;
+    }
+]</code>
+ </pre>
+    </span>
+<span id="execution-results-GETapi-followers" hidden>
+    <blockquote>Received response<span
+                id="execution-response-status-GETapi-followers"></span>:
+    </blockquote>
+    <pre class="json"><code id="execution-response-content-GETapi-followers"
+      data-empty-response-text="<Empty response>" style="max-height: 400px;"></code></pre>
+</span>
+<span id="execution-error-GETapi-followers" hidden>
+    <blockquote>Request failed with error:</blockquote>
+    <pre><code id="execution-error-message-GETapi-followers">
+
+Tip: Check that you&#039;re properly connected to the network.
+If you&#039;re a maintainer of ths API, verify that your API is running and you&#039;ve enabled CORS.
+You can check the Dev Tools console for debugging information.</code></pre>
+</span>
+<form id="form-GETapi-followers" data-method="GET"
+      data-path="api/followers"
+      data-authed="1"
+      data-hasfiles="0"
+      data-isarraybody="0"
+      autocomplete="off"
+      onsubmit="event.preventDefault(); executeTryOut('GETapi-followers', this);">
+    <h3>
+        Request&nbsp;&nbsp;&nbsp;
+                    <button type="button"
+                    style="background-color: #8fbcd4; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-tryout-GETapi-followers"
+                    onclick="tryItOut('GETapi-followers');">Try it out ⚡
+            </button>
+            <button type="button"
+                    style="background-color: #c97a7e; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-canceltryout-GETapi-followers"
+                    onclick="cancelTryOut('GETapi-followers');" hidden>Cancel 🛑
+            </button>&nbsp;&nbsp;
+            <button type="submit"
+                    style="background-color: #6ac174; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-executetryout-GETapi-followers"
+                    data-initial-text="Send Request 💥"
+                    data-loading-text="⏱ Sending..."
+                    hidden>Send Request 💥
+            </button>
+            </h3>
+            <p>
+            <small class="badge badge-green">GET</small>
+            <b><code>api/followers</code></b>
+        </p>
+                <h4 class="fancy-heading-panel"><b>Headers</b></h4>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Authorization</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Authorization" class="auth-value"               data-endpoint="GETapi-followers"
+               value="Bearer Bearer {YOUR_TOKEN}"
+               data-component="header">
+    <br>
+<p>Example: <code>Bearer Bearer {YOUR_TOKEN}</code></p>
+            </div>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Content-Type</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Content-Type"                data-endpoint="GETapi-followers"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Accept</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Accept"                data-endpoint="GETapi-followers"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                        </form>
+
+                    <h2 id="followers-GETapi-following">Get all users that the authenticated user is following.</h2>
+
+<p>
+<small class="badge badge-darkred">requires authentication</small>
+</p>
+
+<p>Returns a list of users that <strong>you</strong> follow.</p>
+
+<span id="example-requests-GETapi-following">
+<blockquote>Example request:</blockquote>
+
+
+<div class="bash-example">
+    <pre><code class="language-bash">curl --request GET \
+    --get "http://127.0.0.1:8000/api/following" \
+    --header "Authorization: Bearer Bearer {YOUR_TOKEN}" \
+    --header "Content-Type: application/json" \
+    --header "Accept: application/json"</code></pre></div>
+
+
+<div class="javascript-example">
+    <pre><code class="language-javascript">const url = new URL(
+    "http://127.0.0.1:8000/api/following"
+);
+
+const headers = {
+    "Authorization": "Bearer Bearer {YOUR_TOKEN}",
+    "Content-Type": "application/json",
+    "Accept": "application/json",
+};
+
+fetch(url, {
+    method: "GET",
+    headers,
+}).then(response =&gt; response.json());</code></pre></div>
+
+</span>
+
+<span id="example-responses-GETapi-following">
+            <blockquote>
+            <p>Example response (200):</p>
+        </blockquote>
+                <pre>
+
+<code class="language-json" style="max-height: 300px;">[
+    {
+        &quot;id&quot;: 5,
+        &quot;name&quot;: &quot;Jane Smith&quot;,
+        &quot;email&quot;: &quot;jane@example.com&quot;
+    }
+]</code>
+ </pre>
+    </span>
+<span id="execution-results-GETapi-following" hidden>
+    <blockquote>Received response<span
+                id="execution-response-status-GETapi-following"></span>:
+    </blockquote>
+    <pre class="json"><code id="execution-response-content-GETapi-following"
+      data-empty-response-text="<Empty response>" style="max-height: 400px;"></code></pre>
+</span>
+<span id="execution-error-GETapi-following" hidden>
+    <blockquote>Request failed with error:</blockquote>
+    <pre><code id="execution-error-message-GETapi-following">
+
+Tip: Check that you&#039;re properly connected to the network.
+If you&#039;re a maintainer of ths API, verify that your API is running and you&#039;ve enabled CORS.
+You can check the Dev Tools console for debugging information.</code></pre>
+</span>
+<form id="form-GETapi-following" data-method="GET"
+      data-path="api/following"
+      data-authed="1"
+      data-hasfiles="0"
+      data-isarraybody="0"
+      autocomplete="off"
+      onsubmit="event.preventDefault(); executeTryOut('GETapi-following', this);">
+    <h3>
+        Request&nbsp;&nbsp;&nbsp;
+                    <button type="button"
+                    style="background-color: #8fbcd4; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-tryout-GETapi-following"
+                    onclick="tryItOut('GETapi-following');">Try it out ⚡
+            </button>
+            <button type="button"
+                    style="background-color: #c97a7e; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-canceltryout-GETapi-following"
+                    onclick="cancelTryOut('GETapi-following');" hidden>Cancel 🛑
+            </button>&nbsp;&nbsp;
+            <button type="submit"
+                    style="background-color: #6ac174; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-executetryout-GETapi-following"
+                    data-initial-text="Send Request 💥"
+                    data-loading-text="⏱ Sending..."
+                    hidden>Send Request 💥
+            </button>
+            </h3>
+            <p>
+            <small class="badge badge-green">GET</small>
+            <b><code>api/following</code></b>
+        </p>
+                <h4 class="fancy-heading-panel"><b>Headers</b></h4>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Authorization</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Authorization" class="auth-value"               data-endpoint="GETapi-following"
+               value="Bearer Bearer {YOUR_TOKEN}"
+               data-component="header">
+    <br>
+<p>Example: <code>Bearer Bearer {YOUR_TOKEN}</code></p>
+            </div>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Content-Type</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Content-Type"                data-endpoint="GETapi-following"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Accept</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Accept"                data-endpoint="GETapi-following"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                        </form>
 
                 <h1 id="friends">Friends</h1>
 
     <p>APIs for managing friendships</p>
 
-                                <h2 id="friends-GETapi-friends-requests">List incoming friend requests.</h2>
+                                <h2 id="friends-GETapi-friends">List all accepted friends.</h2>
+
+<p>
+<small class="badge badge-darkred">requires authentication</small>
+</p>
+
+<p>Returns all users that the authenticated user is friends with (status: accepted).</p>
+
+<span id="example-requests-GETapi-friends">
+<blockquote>Example request:</blockquote>
+
+
+<div class="bash-example">
+    <pre><code class="language-bash">curl --request GET \
+    --get "http://127.0.0.1:8000/api/friends" \
+    --header "Authorization: Bearer Bearer {YOUR_TOKEN}" \
+    --header "Content-Type: application/json" \
+    --header "Accept: application/json"</code></pre></div>
+
+
+<div class="javascript-example">
+    <pre><code class="language-javascript">const url = new URL(
+    "http://127.0.0.1:8000/api/friends"
+);
+
+const headers = {
+    "Authorization": "Bearer Bearer {YOUR_TOKEN}",
+    "Content-Type": "application/json",
+    "Accept": "application/json",
+};
+
+fetch(url, {
+    method: "GET",
+    headers,
+}).then(response =&gt; response.json());</code></pre></div>
+
+</span>
+
+<span id="example-responses-GETapi-friends">
+            <blockquote>
+            <p>Example response (200):</p>
+        </blockquote>
+                <pre>
+
+<code class="language-json" style="max-height: 300px;">[
+    {
+        &quot;id&quot;: 1,
+        &quot;user_id&quot;: 3,
+        &quot;friend_id&quot;: 2,
+        &quot;status&quot;: &quot;accepted&quot;,
+        &quot;friend&quot;: {
+            &quot;id&quot;: 2,
+            &quot;name&quot;: &quot;Jane Doe&quot;
+        }
+    }
+]</code>
+ </pre>
+    </span>
+<span id="execution-results-GETapi-friends" hidden>
+    <blockquote>Received response<span
+                id="execution-response-status-GETapi-friends"></span>:
+    </blockquote>
+    <pre class="json"><code id="execution-response-content-GETapi-friends"
+      data-empty-response-text="<Empty response>" style="max-height: 400px;"></code></pre>
+</span>
+<span id="execution-error-GETapi-friends" hidden>
+    <blockquote>Request failed with error:</blockquote>
+    <pre><code id="execution-error-message-GETapi-friends">
+
+Tip: Check that you&#039;re properly connected to the network.
+If you&#039;re a maintainer of ths API, verify that your API is running and you&#039;ve enabled CORS.
+You can check the Dev Tools console for debugging information.</code></pre>
+</span>
+<form id="form-GETapi-friends" data-method="GET"
+      data-path="api/friends"
+      data-authed="1"
+      data-hasfiles="0"
+      data-isarraybody="0"
+      autocomplete="off"
+      onsubmit="event.preventDefault(); executeTryOut('GETapi-friends', this);">
+    <h3>
+        Request&nbsp;&nbsp;&nbsp;
+                    <button type="button"
+                    style="background-color: #8fbcd4; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-tryout-GETapi-friends"
+                    onclick="tryItOut('GETapi-friends');">Try it out ⚡
+            </button>
+            <button type="button"
+                    style="background-color: #c97a7e; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-canceltryout-GETapi-friends"
+                    onclick="cancelTryOut('GETapi-friends');" hidden>Cancel 🛑
+            </button>&nbsp;&nbsp;
+            <button type="submit"
+                    style="background-color: #6ac174; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-executetryout-GETapi-friends"
+                    data-initial-text="Send Request 💥"
+                    data-loading-text="⏱ Sending..."
+                    hidden>Send Request 💥
+            </button>
+            </h3>
+            <p>
+            <small class="badge badge-green">GET</small>
+            <b><code>api/friends</code></b>
+        </p>
+                <h4 class="fancy-heading-panel"><b>Headers</b></h4>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Authorization</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Authorization" class="auth-value"               data-endpoint="GETapi-friends"
+               value="Bearer Bearer {YOUR_TOKEN}"
+               data-component="header">
+    <br>
+<p>Example: <code>Bearer Bearer {YOUR_TOKEN}</code></p>
+            </div>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Content-Type</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Content-Type"                data-endpoint="GETapi-friends"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Accept</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Accept"                data-endpoint="GETapi-friends"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                        </form>
+
+                    <h2 id="friends-GETapi-friends-pending">List pending friend requests sent by the authenticated user.</h2>
+
+<p>
+<small class="badge badge-darkred">requires authentication</small>
+</p>
+
+<p>Returns all friend requests the authenticated user has sent that are still pending.</p>
+
+<span id="example-requests-GETapi-friends-pending">
+<blockquote>Example request:</blockquote>
+
+
+<div class="bash-example">
+    <pre><code class="language-bash">curl --request GET \
+    --get "http://127.0.0.1:8000/api/friends/pending" \
+    --header "Authorization: Bearer Bearer {YOUR_TOKEN}" \
+    --header "Content-Type: application/json" \
+    --header "Accept: application/json"</code></pre></div>
+
+
+<div class="javascript-example">
+    <pre><code class="language-javascript">const url = new URL(
+    "http://127.0.0.1:8000/api/friends/pending"
+);
+
+const headers = {
+    "Authorization": "Bearer Bearer {YOUR_TOKEN}",
+    "Content-Type": "application/json",
+    "Accept": "application/json",
+};
+
+fetch(url, {
+    method: "GET",
+    headers,
+}).then(response =&gt; response.json());</code></pre></div>
+
+</span>
+
+<span id="example-responses-GETapi-friends-pending">
+            <blockquote>
+            <p>Example response (200):</p>
+        </blockquote>
+                <pre>
+
+<code class="language-json" style="max-height: 300px;">[
+    {
+        &quot;id&quot;: 6,
+        &quot;user_id&quot;: 1,
+        &quot;friend_id&quot;: 2,
+        &quot;status&quot;: &quot;pending&quot;,
+        &quot;friend&quot;: {
+            &quot;id&quot;: 2,
+            &quot;name&quot;: &quot;Jane Doe&quot;
+        }
+    }
+]</code>
+ </pre>
+    </span>
+<span id="execution-results-GETapi-friends-pending" hidden>
+    <blockquote>Received response<span
+                id="execution-response-status-GETapi-friends-pending"></span>:
+    </blockquote>
+    <pre class="json"><code id="execution-response-content-GETapi-friends-pending"
+      data-empty-response-text="<Empty response>" style="max-height: 400px;"></code></pre>
+</span>
+<span id="execution-error-GETapi-friends-pending" hidden>
+    <blockquote>Request failed with error:</blockquote>
+    <pre><code id="execution-error-message-GETapi-friends-pending">
+
+Tip: Check that you&#039;re properly connected to the network.
+If you&#039;re a maintainer of ths API, verify that your API is running and you&#039;ve enabled CORS.
+You can check the Dev Tools console for debugging information.</code></pre>
+</span>
+<form id="form-GETapi-friends-pending" data-method="GET"
+      data-path="api/friends/pending"
+      data-authed="1"
+      data-hasfiles="0"
+      data-isarraybody="0"
+      autocomplete="off"
+      onsubmit="event.preventDefault(); executeTryOut('GETapi-friends-pending', this);">
+    <h3>
+        Request&nbsp;&nbsp;&nbsp;
+                    <button type="button"
+                    style="background-color: #8fbcd4; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-tryout-GETapi-friends-pending"
+                    onclick="tryItOut('GETapi-friends-pending');">Try it out ⚡
+            </button>
+            <button type="button"
+                    style="background-color: #c97a7e; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-canceltryout-GETapi-friends-pending"
+                    onclick="cancelTryOut('GETapi-friends-pending');" hidden>Cancel 🛑
+            </button>&nbsp;&nbsp;
+            <button type="submit"
+                    style="background-color: #6ac174; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-executetryout-GETapi-friends-pending"
+                    data-initial-text="Send Request 💥"
+                    data-loading-text="⏱ Sending..."
+                    hidden>Send Request 💥
+            </button>
+            </h3>
+            <p>
+            <small class="badge badge-green">GET</small>
+            <b><code>api/friends/pending</code></b>
+        </p>
+                <h4 class="fancy-heading-panel"><b>Headers</b></h4>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Authorization</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Authorization" class="auth-value"               data-endpoint="GETapi-friends-pending"
+               value="Bearer Bearer {YOUR_TOKEN}"
+               data-component="header">
+    <br>
+<p>Example: <code>Bearer Bearer {YOUR_TOKEN}</code></p>
+            </div>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Content-Type</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Content-Type"                data-endpoint="GETapi-friends-pending"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Accept</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Accept"                data-endpoint="GETapi-friends-pending"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                        </form>
+
+                    <h2 id="friends-GETapi-friends-requests">List incoming friend requests.</h2>
 
 <p>
 <small class="badge badge-darkred">requires authentication</small>
@@ -1097,7 +2161,6 @@ fetch(url, {
         &quot;friend_id&quot;: 1,
         &quot;status&quot;: &quot;pending&quot;,
         &quot;created_at&quot;: &quot;2025-10-20T05:00:00.000000Z&quot;,
-        &quot;updated_at&quot;: &quot;2025-10-20T05:00:00.000000Z&quot;,
         &quot;sender&quot;: {
             &quot;id&quot;: 2,
             &quot;name&quot;: &quot;Jane Doe&quot;
@@ -1188,7 +2251,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
             </div>
                         </form>
 
-                    <h2 id="friends-POSTapi-friends-request">Send a friend request.</h2>
+                    <h2 id="friends-POSTapi-friends-send">Send a friend request.</h2>
 
 <p>
 <small class="badge badge-darkred">requires authentication</small>
@@ -1196,13 +2259,13 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 
 
-<span id="example-requests-POSTapi-friends-request">
+<span id="example-requests-POSTapi-friends-send">
 <blockquote>Example request:</blockquote>
 
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request POST \
-    "http://127.0.0.1:8000/api/friends/request" \
+    "http://127.0.0.1:8000/api/friends/send" \
     --header "Authorization: Bearer Bearer {YOUR_TOKEN}" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json" \
@@ -1214,7 +2277,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "http://127.0.0.1:8000/api/friends/request"
+    "http://127.0.0.1:8000/api/friends/send"
 );
 
 const headers = {
@@ -1235,7 +2298,7 @@ fetch(url, {
 
 </span>
 
-<span id="example-responses-POSTapi-friends-request">
+<span id="example-responses-POSTapi-friends-send">
             <blockquote>
             <p>Example response (200):</p>
         </blockquote>
@@ -1246,43 +2309,43 @@ fetch(url, {
 }</code>
  </pre>
     </span>
-<span id="execution-results-POSTapi-friends-request" hidden>
+<span id="execution-results-POSTapi-friends-send" hidden>
     <blockquote>Received response<span
-                id="execution-response-status-POSTapi-friends-request"></span>:
+                id="execution-response-status-POSTapi-friends-send"></span>:
     </blockquote>
-    <pre class="json"><code id="execution-response-content-POSTapi-friends-request"
+    <pre class="json"><code id="execution-response-content-POSTapi-friends-send"
       data-empty-response-text="<Empty response>" style="max-height: 400px;"></code></pre>
 </span>
-<span id="execution-error-POSTapi-friends-request" hidden>
+<span id="execution-error-POSTapi-friends-send" hidden>
     <blockquote>Request failed with error:</blockquote>
-    <pre><code id="execution-error-message-POSTapi-friends-request">
+    <pre><code id="execution-error-message-POSTapi-friends-send">
 
 Tip: Check that you&#039;re properly connected to the network.
 If you&#039;re a maintainer of ths API, verify that your API is running and you&#039;ve enabled CORS.
 You can check the Dev Tools console for debugging information.</code></pre>
 </span>
-<form id="form-POSTapi-friends-request" data-method="POST"
-      data-path="api/friends/request"
+<form id="form-POSTapi-friends-send" data-method="POST"
+      data-path="api/friends/send"
       data-authed="1"
       data-hasfiles="0"
       data-isarraybody="0"
       autocomplete="off"
-      onsubmit="event.preventDefault(); executeTryOut('POSTapi-friends-request', this);">
+      onsubmit="event.preventDefault(); executeTryOut('POSTapi-friends-send', this);">
     <h3>
         Request&nbsp;&nbsp;&nbsp;
                     <button type="button"
                     style="background-color: #8fbcd4; padding: 5px 10px; border-radius: 5px; border-width: thin;"
-                    id="btn-tryout-POSTapi-friends-request"
-                    onclick="tryItOut('POSTapi-friends-request');">Try it out ⚡
+                    id="btn-tryout-POSTapi-friends-send"
+                    onclick="tryItOut('POSTapi-friends-send');">Try it out ⚡
             </button>
             <button type="button"
                     style="background-color: #c97a7e; padding: 5px 10px; border-radius: 5px; border-width: thin;"
-                    id="btn-canceltryout-POSTapi-friends-request"
-                    onclick="cancelTryOut('POSTapi-friends-request');" hidden>Cancel 🛑
+                    id="btn-canceltryout-POSTapi-friends-send"
+                    onclick="cancelTryOut('POSTapi-friends-send');" hidden>Cancel 🛑
             </button>&nbsp;&nbsp;
             <button type="submit"
                     style="background-color: #6ac174; padding: 5px 10px; border-radius: 5px; border-width: thin;"
-                    id="btn-executetryout-POSTapi-friends-request"
+                    id="btn-executetryout-POSTapi-friends-send"
                     data-initial-text="Send Request 💥"
                     data-loading-text="⏱ Sending..."
                     hidden>Send Request 💥
@@ -1290,7 +2353,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
             </h3>
             <p>
             <small class="badge badge-black">POST</small>
-            <b><code>api/friends/request</code></b>
+            <b><code>api/friends/send</code></b>
         </p>
                 <h4 class="fancy-heading-panel"><b>Headers</b></h4>
                                 <div style="padding-left: 28px; clear: unset;">
@@ -1298,7 +2361,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 &nbsp;
  &nbsp;
                 <input type="text" style="display: none"
-                              name="Authorization" class="auth-value"               data-endpoint="POSTapi-friends-request"
+                              name="Authorization" class="auth-value"               data-endpoint="POSTapi-friends-send"
                value="Bearer Bearer {YOUR_TOKEN}"
                data-component="header">
     <br>
@@ -1309,7 +2372,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 &nbsp;
  &nbsp;
                 <input type="text" style="display: none"
-                              name="Content-Type"                data-endpoint="POSTapi-friends-request"
+                              name="Content-Type"                data-endpoint="POSTapi-friends-send"
                value="application/json"
                data-component="header">
     <br>
@@ -1320,7 +2383,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 &nbsp;
  &nbsp;
                 <input type="text" style="display: none"
-                              name="Accept"                data-endpoint="POSTapi-friends-request"
+                              name="Accept"                data-endpoint="POSTapi-friends-send"
                value="application/json"
                data-component="header">
     <br>
@@ -1332,7 +2395,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 <small>integer</small>&nbsp;
  &nbsp;
                 <input type="number" style="display: none"
-               step="any"               name="friend_id"                data-endpoint="POSTapi-friends-request"
+               step="any"               name="friend_id"                data-endpoint="POSTapi-friends-send"
                value="2"
                data-component="body">
     <br>
